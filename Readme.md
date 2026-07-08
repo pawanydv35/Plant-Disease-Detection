@@ -1,130 +1,140 @@
-# Plant Disease Detection
+# Plant Disease Detection 
 
 ## Overview
 
-Plant diseases are one of the major factors affecting agricultural productivity and food security worldwide. Early and accurate identification of plant diseases enables timely intervention, reducing crop losses and improving yield quality.
+Plant diseases pose a significant challenge to global agriculture by reducing crop yield and quality. Early and accurate disease identification enables timely intervention, helping farmers minimize losses and improve productivity.
 
-This project presents a deep learning-based plant disease classification system developed using **Transfer Learning**. A pretrained **AlexNet** model, originally trained on the **ImageNet** dataset, is fine-tuned on the **PlantVillage** dataset to classify healthy and diseased plant leaves. By leveraging pretrained feature representations, the model achieves improved classification performance while significantly reducing training time and computational requirements compared to training a convolutional neural network from scratch.
+This project presents an automated **Plant Disease Detection System** using **Transfer Learning** with a pretrained **AlexNet** model. Instead of training a deep convolutional neural network from scratch, the project leverages knowledge learned from the **ImageNet-1K** dataset and fine-tunes the model for plant disease classification using the **PlantVillage** dataset.
+
+The implementation is developed in **PyTorch** and demonstrates how transfer learning can achieve high classification performance while reducing computational cost and training time.
 
 ---
 
-## Features
+# Features
 
 * Transfer Learning using a pretrained AlexNet model
-* Automatic plant disease classification from leaf images
-* Image preprocessing and data augmentation pipeline
-* Training, validation, and testing workflow
-* Performance evaluation using multiple classification metrics
-* Modular and easy-to-understand implementation
-* Suitable for further deployment in web or mobile applications
+* Plant disease classification from leaf images
+* Data preprocessing and augmentation
+* ImageNet normalization
+* Automatic dataset splitting into training, validation, and testing sets
+* Model evaluation using classification metrics
+* Trained model saved for future inference
+* Implemented entirely using PyTorch
 
 ---
 
-## Dataset
+# Dataset
 
-The model is trained and evaluated using the **PlantVillage** dataset, a widely used benchmark dataset for plant disease classification.
+The project uses the **PlantVillage** dataset, one of the most widely used benchmark datasets for plant disease classification.
 
-### Dataset Highlights
+### Dataset Characteristics
 
 * More than **50,000** labeled leaf images
-* Multiple crop species
+* Multiple plant species
 * Healthy and diseased leaf categories
-* High-quality RGB images
-* Multi-class classification problem
+* RGB images
+* Multi-class image classification problem
 
 ---
 
-## Methodology
+# Methodology
 
-The project follows a standard deep learning workflow consisting of the following stages:
+The project follows the workflow below:
 
-1. Dataset acquisition
-2. Image preprocessing
-3. Dataset splitting
-4. Data augmentation
-5. Transfer learning using a pretrained AlexNet model
-6. Model fine-tuning
-7. Performance evaluation
-8. Prediction on unseen images
-
----
-
-## Data Preprocessing
-
-To improve model performance and training stability, the following preprocessing techniques are applied:
-
-* Image resizing to **224 × 224 pixels**
-* Pixel value normalization
-* Dataset shuffling
-* Training, validation, and test split
-* Data augmentation on the training dataset:
-
-  * Random horizontal flipping
-  * Random rotation
-  * Random zoom
+1. Download and load the PlantVillage dataset
+2. Apply image preprocessing and augmentation
+3. Split the dataset into training, validation, and testing sets
+4. Load a pretrained AlexNet model
+5. Freeze the convolutional feature extraction layers
+6. Replace the final classification layer
+7. Train the custom classifier
+8. Evaluate the trained model
+9. Save the trained model for deployment
 
 ---
 
-## Transfer Learning
+# Data Preprocessing
 
-Instead of training an entire convolutional neural network from scratch, this project employs **Transfer Learning**.
+To improve the model's learning capability and generalization, the following preprocessing techniques are applied:
 
-The pretrained **AlexNet** model, trained on the **ImageNet** dataset, is used as a feature extractor. The original classification layer is replaced with a custom classifier corresponding to the number of plant disease classes in the PlantVillage dataset.
+* Resize images to **224 × 224** pixels
+* Random Horizontal Flip
+* Random Rotation (10°)
+* Random Resized Crop
+* Color Jitter (Contrast Enhancement)
+* Convert images to PyTorch tensors
+* Normalize images using ImageNet mean and standard deviation
 
-The training process consists of:
+These preprocessing steps help improve robustness against variations in image orientation, scale, and lighting conditions.
+
+---
+
+# Transfer Learning
+
+This project utilizes **Transfer Learning** with the pretrained **AlexNet** architecture available in the PyTorch `torchvision.models` library.
+
+The model is initialized using weights pretrained on the **ImageNet-1K** dataset.
+
+The transfer learning strategy consists of:
 
 * Loading pretrained ImageNet weights
-* Replacing the final classification layer
-* Training the newly added classifier layers
-* Fine-tuning selected pretrained layers to improve classification accuracy
+* Freezing all convolutional feature extraction layers
+* Replacing the original output layer with a new fully connected layer matching the number of plant disease classes
+* Training only the newly added classifier layer
 
-This approach enables faster convergence while improving the model's generalization capability.
+This approach significantly reduces training time while maintaining strong classification performance.
 
 ---
 
-## Model Architecture
+# Model Architecture
 
 The implemented model consists of:
 
-* Pretrained AlexNet convolutional feature extractor
-* Fully connected classifier
-* ReLU activation functions
-* Dropout layers for regularization
-* Softmax output layer for multi-class classification
+* Pretrained AlexNet Feature Extractor
+* Five Convolutional Layers
+* ReLU Activation Functions
+* Max Pooling Layers
+* Fully Connected Classifier
+* Custom Output Layer
+* Softmax Classification
+
+Only the final classification layer is retrained for the PlantVillage dataset.
 
 ---
 
-## Technologies Used
+# Technologies Used
 
-| Category                   | Technologies                     |
-| -------------------------- | -------------------------------- |
-| Programming Language       | Python                           |
-| Deep Learning Framework    | TensorFlow / Keras               |
-| Transfer Learning          | AlexNet (Pretrained on ImageNet) |
-| Image Processing           | OpenCV                           |
-| Numerical Computing        | NumPy                            |
-| Data Visualization         | Matplotlib                       |
-| Machine Learning Utilities | Scikit-learn                     |
-| Development Environment    | Google Colab / Jupyter Notebook  |
-
----
-
-## Training Configuration
-
-| Parameter          | Value                                 |
-| ------------------ | ------------------------------------- |
-| Input Image Size   | 224 × 224                             |
-| Batch Size         | 32                                    |
-| Optimizer          | Adam                                  |
-| Loss Function      | Categorical Crossentropy              |
-| Output Activation  | Softmax                               |
-| Evaluation Metrics | Accuracy, Precision, Recall, F1-Score |
+| Category                | Technology                      |
+| ----------------------- | ------------------------------- |
+| Programming Language    | Python                          |
+| Deep Learning Framework | PyTorch                         |
+| Computer Vision         | Torchvision                     |
+| Numerical Computing     | NumPy                           |
+| Data Visualization      | Matplotlib                      |
+| Dataset Download        | KaggleHub                       |
+| Development Environment | Google Colab / Jupyter Notebook |
 
 ---
 
-## Performance Evaluation
+# Training Configuration
 
-The trained model is evaluated using the following metrics:
+| Parameter          | Value            |
+| ------------------ | ---------------- |
+| Model              | AlexNet          |
+| Pretrained Weights | ImageNet-1K      |
+| Framework          | PyTorch          |
+| Input Image Size   | 224 × 224        |
+| Batch Size         | 32               |
+| Optimizer          | Adam             |
+| Learning Rate      | 0.0001           |
+| Loss Function      | CrossEntropyLoss |
+| Epochs             | 20               |
+
+---
+
+# Performance Evaluation
+
+The trained model is evaluated using standard classification metrics, including:
 
 * Classification Accuracy
 * Precision
@@ -132,21 +142,21 @@ The trained model is evaluated using the following metrics:
 * F1-Score
 * Confusion Matrix
 
-These metrics provide a comprehensive assessment of the model's classification performance across all disease categories.
+These metrics provide a comprehensive assessment of the model's ability to correctly classify healthy and diseased plant leaves.
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
 Plant-Disease-Detection/
 │
 ├── dataset/
 │
-├── notebooks/
-│   └── Plant_Disease_Detection.ipynb
+├── Plant_detection_disease_pytorch.ipynb
 │
 ├── models/
+│   └── plant_disease_alexnet.pth
 │
 ├── images/
 │
@@ -159,16 +169,16 @@ Plant-Disease-Detection/
 
 ---
 
-## Installation
+# Installation
 
-### Clone the Repository
+## Clone the Repository
 
 ```bash
 git clone https://github.com/your-username/Plant-Disease-Detection.git
 cd Plant-Disease-Detection
 ```
 
-### Install Dependencies
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -176,45 +186,84 @@ pip install -r requirements.txt
 
 ---
 
-## Usage
+# Usage
 
 1. Download the PlantVillage dataset.
-2. Place the dataset inside the `dataset/` directory.
-3. Open the notebook in Google Colab or Jupyter Notebook.
-4. Execute all cells to preprocess the data.
-5. Train the transfer learning model.
-6. Evaluate the trained model.
-7. Use the trained model to predict diseases from new plant leaf images.
+2. Open the project notebook in Google Colab or Jupyter Notebook.
+3. Execute all cells sequentially.
+4. The notebook will:
+
+   * Load and preprocess the dataset
+   * Apply data augmentation
+   * Split the dataset into training, validation, and testing sets
+   * Load the pretrained AlexNet model
+   * Train the classifier
+   * Evaluate the model
+   * Save the trained model as **plant_disease_alexnet.pth**
 
 ---
 
-## Future Enhancements
+# Workflow
 
-The project can be extended in several directions:
-
-* Support for real-world field images
-* Mobile application deployment
-* Web application using Streamlit or Flask
-* Model optimization for edge devices
-* Integration with cloud-based prediction services
-* Real-time disease detection using smartphone cameras
+```text
+                PlantVillage Dataset
+                        │
+                        ▼
+             Image Preprocessing
+                        │
+                        ▼
+              Data Augmentation
+                        │
+                        ▼
+          Train / Validation / Test Split
+                 (80% / 10% / 10%)
+                        │
+                        ▼
+      Pretrained AlexNet (ImageNet-1K)
+                        │
+                        ▼
+      Freeze Feature Extraction Layers
+                        │
+                        ▼
+      Replace Final Classification Layer
+                        │
+                        ▼
+                Model Training
+                        │
+                        ▼
+             Validation & Testing
+                        │
+                        ▼
+          Save Trained Model (.pth)
+```
 
 ---
 
-## References
+# Future Enhancements
+
+The project can be extended by incorporating:
+
+* Fine-tuning additional AlexNet layers
+* Deployment using Streamlit or Flask
+* Mobile application integration
+* Real-time disease detection using a smartphone camera
+* Support for field-acquired images
+* Comparison with advanced architectures such as ResNet, EfficientNet, DenseNet, and Vision Transformers
+
+---
+
+# References
 
 * PlantVillage Dataset
-* ImageNet Dataset
-* AlexNet: *ImageNet Classification with Deep Convolutional Neural Networks* (Krizhevsky, Sutskever, & Hinton, 2012)
-* TensorFlow Documentation
-* Keras Documentation
+* ImageNet-1K Dataset
+* Krizhevsky, A., Sutskever, I., & Hinton, G. E. (2012). *ImageNet Classification with Deep Convolutional Neural Networks.*
+* PyTorch Documentation
+* Torchvision Documentation
 
 ---
 
-## Author
+# Author
 
 **Pawan Yadav**
 
-**Project:** Plant Disease Detection Using Transfer Learning
-
-This project demonstrates the application of transfer learning and deep convolutional neural networks for automated plant disease classification, providing a scalable and efficient solution for precision agriculture.
+This project demonstrates the application of **Transfer Learning** and **Deep Convolutional Neural Networks (CNNs)** for automated plant disease classification. By leveraging pretrained ImageNet features through AlexNet, the model provides an efficient and scalable solution for intelligent agricultural disease diagnosis.
