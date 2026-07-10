@@ -25,6 +25,7 @@ from app.utils.config import get_settings
 from app.database.session import init_db
 from app.routes import auth_routes, profile_routes, predict_routes, history_routes
 from app.services.model_service import ModelService
+from app.services.leaf_gate_service import LeafGateService
 
 settings = get_settings()
 UPLOAD_DIR = Path(__file__).resolve().parents[1] / "uploads"
@@ -54,6 +55,17 @@ async def lifespan(app: FastAPI):
         # while you're setting up the model file — /predict will 503 until fixed.
         print(f"WARNING: {e}")
         app.state.model_service = None
+
+    try:
+        app.state.leaf_gate_service = LeafGateService()
+        print("Leaf gate (CLIP) loaded successfully.")
+    except Exception as e:
+        # If CLIP can't load (e.g. no internet on first run to download
+        # it), let the app boot anyway — /predict will just skip the
+        # leaf-check step and go straight to disease classification.
+        print(f"WARNING: Leaf gate failed to load: {e}")
+        app.state.leaf_gate_service = None
+
     yield
     # --- Shutdown ---
     # (cleanup goes here if ever needed, e.g. closing DB pools)

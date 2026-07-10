@@ -19,7 +19,7 @@ _BACKEND_ROOT = Path(__file__).resolve().parents[2]
 if str(_BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(_BACKEND_ROOT))
 
-from model.disease_info import get_disease_info  # noqa: E402
+from model.disease_info import get_disease_info, NOT_A_LEAF_LABEL  # noqa: E402
 
 UPLOAD_DIR = Path(__file__).resolve().parents[2] / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -41,7 +41,13 @@ def _save_upload(file: UploadFile, raw_bytes: bytes) -> str:
     return filename
 
 
-def run_prediction(db: Session, user: User, file: UploadFile, model_service) -> tuple[Prediction, dict]:
+def run_prediction(
+    db: Session,
+    user: User,
+    file: UploadFile,
+    model_service,
+    leaf_gate_service=None,
+) -> tuple[Prediction, dict]:
     if file.content_type not in ALLOWED_CONTENT_TYPES:
         raise InvalidImageError(f"Unsupported file type: {file.content_type}. Upload a JPEG, PNG, or WEBP image.")
 
@@ -56,6 +62,25 @@ def run_prediction(db: Session, user: User, file: UploadFile, model_service) -> 
         raise InvalidImageError("The uploaded file isn't a valid image.")
 
     filename = _save_upload(file, raw_bytes)
+
+    # --- Leaf gate: reject non-leaf images before wasting a disease
+    # classification on them. If the gate failed to load (e.g. no
+    # internet on first startup), we skip this check rather than
+    # blocking every prediction.
+    if leaf_gate_service is not None:
+        is_leaf, leaf_score = leaf_gate_service.is_leaf(image)
+        if not is_leaf:
+            prediction = Prediction(
+                user_id=user.id,
+                image_url=f"/uploads/{filename}",
+                disease_name=NOT_A_LEAF_LABEL,
+                confidence=leaf_score,
+                top_predictions=json.dumps([]),
+            )
+            db.add(prediction)
+            db.commit()
+            db.refresh(prediction)
+            return prediction, get_disease_info(NOT_A_LEAF_LABEL)
 
     result = model_service.predict(image, top_k=3)
 

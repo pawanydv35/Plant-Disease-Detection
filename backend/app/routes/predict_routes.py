@@ -32,8 +32,12 @@ def predict(
             detail="Model is not loaded. Check server startup logs.",
         )
 
+    leaf_gate_service = getattr(request.app.state, "leaf_gate_service", None)
+
     try:
-        prediction, info = prediction_service.run_prediction(db, current_user, file, model_service)
+        prediction, info = prediction_service.run_prediction(
+            db, current_user, file, model_service, leaf_gate_service
+        )
     except InvalidImageError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 

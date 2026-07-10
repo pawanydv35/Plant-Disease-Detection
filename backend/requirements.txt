@@ -7,17 +7,16 @@ pydantic==2.9.2
 pydantic-settings==2.5.2
 
 # --- ML ---
-# torch==2.4.1
-# torchvision==0.19.1
-torch
-torchvision
-torchaudio
+torch==2.4.1
+torchvision==0.19.1
 pillow==10.4.0
 numpy==1.26.4
+transformers==4.44.2      # CLIP model for the "is this a leaf?" gate
 
 # --- Auth ---
 python-jose[cryptography]==3.3.0
-passlib[bcrypt]==4.0.1
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1             # pinned: passlib 1.7.4 breaks on bcrypt>=4.1 (missing __about__)
 python-multipart==0.0.9   # required for file uploads via FastAPI
 
 # --- Database ---
