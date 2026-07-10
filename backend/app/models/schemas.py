@@ -38,3 +38,28 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserOut
+
+
+class TopPrediction(BaseModel):
+    label: str
+    confidence: float
+
+
+class PredictResponse(BaseModel):
+    id: uuid.UUID
+    disease_name: str
+    confidence: float
+    top_predictions: list[TopPrediction]
+    image_url: str
+    created_at: datetime
+
+
+class PredictionOut(BaseModel):
+    id: uuid.UUID
+    disease_name: str
+    confidence: float
+    image_url: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

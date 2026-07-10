@@ -17,15 +17,18 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from pathlib import Path
+
+from fastapi.staticfiles import StaticFiles
+
 from app.utils.config import get_settings
 from app.database.session import init_db
-from app.routes import auth_routes, profile_routes
-
-# NOTE: these will be implemented in the model-integration and history steps.
-# from app.services.model_service import ModelService
-# from app.routes import predict_routes, history_routes
+from app.routes import auth_routes, profile_routes, predict_routes, history_routes
+from app.services.model_service import ModelService
 
 settings = get_settings()
+UPLOAD_DIR = Path(__file__).resolve().parents[1] / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
 
 
 @asynccontextmanager
@@ -42,8 +45,15 @@ async def lifespan(app: FastAPI):
     re-loading the .pth file per request (which would be very slow).
     """
     # --- Startup ---
-    # app.state.model_service = ModelService(model_path="model/model.pth")
     init_db()
+    try:
+        app.state.model_service = ModelService(model_path=settings.MODEL_PATH)
+        print(f"Model loaded successfully ({app.state.model_service.num_classes} classes).")
+    except FileNotFoundError as e:
+        # Let the app boot anyway so /health, /signup, /login still work
+        # while you're setting up the model file — /predict will 503 until fixed.
+        print(f"WARNING: {e}")
+        app.state.model_service = None
     yield
     # --- Shutdown ---
     # (cleanup goes here if ever needed, e.g. closing DB pools)
@@ -74,7 +84,8 @@ def health_check():
 
 app.include_router(auth_routes.router, prefix="", tags=["auth"])
 app.include_router(profile_routes.router, prefix="/profile", tags=["profile"])
+app.include_router(predict_routes.router, prefix="", tags=["prediction"])
+app.include_router(history_routes.router, prefix="/history", tags=["history"])
 
-# Wired up in later steps:
-# app.include_router(predict_routes.router, prefix="", tags=["prediction"])
-# app.include_router(history_routes.router, prefix="/history", tags=["history"])
+# Serves uploaded leaf images back to the frontend at /uploads/<filename>
+app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")

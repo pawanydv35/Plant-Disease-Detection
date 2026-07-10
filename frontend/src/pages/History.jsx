@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import api from "../lib/axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 export default function History() {
   const [predictions, setPredictions] = useState([]);
@@ -8,13 +11,21 @@ export default function History() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // NOTE: GET /history is implemented in the history-endpoint step.
     api
       .get("/history")
       .then(({ data }) => setPredictions(data))
       .catch(() => setPredictions([]))
       .finally(() => setLoading(false));
   }, []);
+
+  async function handleDelete(id) {
+    try {
+      await api.delete(`/history/${id}`);
+      setPredictions((prev) => prev.filter((p) => p.id !== id));
+    } catch {
+      toast.error("Couldn't delete that prediction.");
+    }
+  }
 
   const filtered = predictions.filter((p) =>
     p.disease_name?.toLowerCase().includes(query.toLowerCase())
@@ -46,7 +57,7 @@ export default function History() {
         {filtered.map((p) => (
           <div key={p.id} className="flex items-center justify-between rounded-2xl border border-forest/10 bg-white p-4 shadow-sm">
             <div className="flex items-center gap-4">
-              <img src={p.image_url} alt={p.disease_name} className="h-14 w-14 rounded-lg object-cover" />
+              <img src={`${API_BASE_URL}${p.image_url}`} alt={p.disease_name} className="h-14 w-14 rounded-lg object-cover" />
               <div>
                 <p className="font-medium text-charcoal">{p.disease_name}</p>
                 <p className="text-xs text-charcoal/50">
@@ -54,9 +65,18 @@ export default function History() {
                 </p>
               </div>
             </div>
-            <span className="rounded-full bg-surface px-3 py-1 font-mono text-xs text-forest">
-              {Math.round(p.confidence * 100)}%
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full bg-surface px-3 py-1 font-mono text-xs text-forest">
+                {Math.round(p.confidence * 100)}%
+              </span>
+              <button
+                onClick={() => handleDelete(p.id)}
+                aria-label="Delete prediction"
+                className="text-charcoal/30 transition hover:text-rust"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
