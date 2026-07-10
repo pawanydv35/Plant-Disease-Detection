@@ -18,6 +18,8 @@ import torch.nn as nn
 from torchvision import models, transforms
 from PIL import Image
 
+from model.disease_info import NOT_A_LEAF_LABEL
+
 # --- 1. Fill this in with your real class names, in the SAME ORDER
 #     used during training. Placeholder values below will make
 #     predictions run, but the disease names will be meaningless
@@ -38,6 +40,16 @@ _TRANSFORM = transforms.Compose(
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ]
 )
+
+
+# Below this confidence, we treat the prediction as unreliable rather
+# than showing a specific (likely wrong) disease name. This is a
+# heuristic, NOT true "is this a leaf?" detection — the model was only
+# ever trained to choose among your disease classes, so it has no real
+# concept of "not a leaf." A low top confidence usually means the image
+# doesn't resemble any training class well, which is the closest signal
+# we have without training a separate leaf/not-leaf classifier.
+LOW_CONFIDENCE_THRESHOLD = 0.40
 
 
 def _infer_num_classes(state_dict: dict) -> int:
@@ -110,8 +122,11 @@ def predict_image(model: nn.Module, image: Image.Image, top_k: int = 3) -> dict:
         for prob, idx in zip(top_probs, top_indices)
     ]
 
+    is_uncertain = top_predictions[0]["confidence"] < LOW_CONFIDENCE_THRESHOLD
+
     return {
-        "disease_name": top_predictions[0]["label"],
+        "disease_name": NOT_A_LEAF_LABEL if is_uncertain else top_predictions[0]["label"],
         "confidence": top_predictions[0]["confidence"],
         "top_predictions": top_predictions,
+        "is_uncertain": is_uncertain,
     }

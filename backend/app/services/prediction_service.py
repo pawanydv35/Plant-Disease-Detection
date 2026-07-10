@@ -4,6 +4,7 @@ and routes/history_routes.py, same pattern as auth_service.py.
 """
 
 import json
+import sys
 import uuid
 from pathlib import Path
 
@@ -13,6 +14,12 @@ from sqlalchemy.orm import Session
 
 from app.models.prediction import Prediction
 from app.models.user import User
+
+_BACKEND_ROOT = Path(__file__).resolve().parents[2]
+if str(_BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(_BACKEND_ROOT))
+
+from model.disease_info import get_disease_info  # noqa: E402
 
 UPLOAD_DIR = Path(__file__).resolve().parents[2] / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -34,7 +41,7 @@ def _save_upload(file: UploadFile, raw_bytes: bytes) -> str:
     return filename
 
 
-def run_prediction(db: Session, user: User, file: UploadFile, model_service) -> Prediction:
+def run_prediction(db: Session, user: User, file: UploadFile, model_service) -> tuple[Prediction, dict]:
     if file.content_type not in ALLOWED_CONTENT_TYPES:
         raise InvalidImageError(f"Unsupported file type: {file.content_type}. Upload a JPEG, PNG, or WEBP image.")
 
@@ -62,7 +69,9 @@ def run_prediction(db: Session, user: User, file: UploadFile, model_service) -> 
     db.add(prediction)
     db.commit()
     db.refresh(prediction)
-    return prediction
+
+    info = get_disease_info(prediction.disease_name)
+    return prediction, info
 
 
 def list_history(db: Session, user: User) -> list[Prediction]:

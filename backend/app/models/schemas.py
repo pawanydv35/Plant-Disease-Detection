@@ -52,6 +52,10 @@ class PredictResponse(BaseModel):
     top_predictions: list[TopPrediction]
     image_url: str
     created_at: datetime
+    causes: str
+    symptoms: str
+    treatment: str
+    prevention: str
 
 
 class PredictionOut(BaseModel):

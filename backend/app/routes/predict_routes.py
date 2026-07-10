@@ -33,7 +33,7 @@ def predict(
         )
 
     try:
-        prediction = prediction_service.run_prediction(db, current_user, file, model_service)
+        prediction, info = prediction_service.run_prediction(db, current_user, file, model_service)
     except InvalidImageError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -44,4 +44,8 @@ def predict(
         top_predictions=[TopPrediction(**p) for p in json.loads(prediction.top_predictions)],
         image_url=prediction.image_url,
         created_at=prediction.created_at,
+        causes=info["causes"],
+        symptoms=info["symptoms"],
+        treatment=info["treatment"],
+        prevention=info["prevention"],
     )
