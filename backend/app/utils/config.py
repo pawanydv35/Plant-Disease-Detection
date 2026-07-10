@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list[str] = ["http://localhost:5173"]
 
     # --- Database (filled in during DB step) ---
-    DATABASE_URL: str = "postgresql://user:password@localhost:5432/plant_disease_db"
+    DATABASE_URL: str = "postgresql+psycopg2://postgres:3010@localhost:5432/plant_disease_db"
 
     # --- JWT (filled in during Auth step) ---
     JWT_SECRET_KEY: str = "changeme"
