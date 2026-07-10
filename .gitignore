@@ -1,0 +1,18 @@
+# --- Python / backend ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+backend/model/*.pth
+!backend/model/.gitkeep
+
+# --- Node / frontend ---
+node_modules/
+frontend/dist/
+frontend/.env
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
