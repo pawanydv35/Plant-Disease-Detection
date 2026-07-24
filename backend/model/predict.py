@@ -1,12 +1,20 @@
 """
 AlexNet inference logic.
 
-IMPORTANT — fill in CLASS_NAMES below with your model's exact ordered
-class list before deploying. If you trained with
-`torchvision.datasets.ImageFolder`, this is `train_dataset.classes`
-in your training script (alphabetically sorted folder names). You can
-also run `inspect_checkpoint.py` against your model.pth to see if the
-class list was saved inside the checkpoint itself.
+CLASS_NAMES below was inferred, not read from the checkpoint: running
+inspect_checkpoint.py on plant_disease_alexnet.pth showed a raw
+state_dict (no "classes" metadata saved) with a classifier.6 output
+shape of (38, 4096) — i.e. 38 output classes. That count/architecture
+combination (AlexNet, 38 classes) matches the widely-used PlantVillage
+/ "New Plant Diseases Dataset" leaf-disease dataset, so the list below
+is that dataset's standard alphabetical ImageFolder class order.
+
+⚠️ VERIFY THIS before trusting predictions: if this model was trained
+on a *different* 38-class dataset, or on PlantVillage with a different
+train/val split tool that didn't sort alphabetically, this list will
+be wrong and predictions will silently point to the wrong disease. The
+only way to be 100% sure is to check `train_dataset.classes` from your
+own training script and confirm it matches the order below.
 
 The number of output classes does NOT need to be hardcoded here — it's
 inferred automatically from the shape of the final classifier layer in
@@ -20,14 +28,49 @@ from PIL import Image
 
 from model.disease_info import NOT_A_LEAF_LABEL
 
-# --- 1. Fill this in with your real class names, in the SAME ORDER
-#     used during training. Placeholder values below will make
-#     predictions run, but the disease names will be meaningless
-#     until you replace this list. ---
+# --- 1. Standard PlantVillage / "New Plant Diseases Dataset" 38-class
+#     list, alphabetically sorted (ImageFolder default). See the
+#     module docstring above for why this order was chosen and how
+#     to double check it against your own training script. ---
 CLASS_NAMES: list[str] = [
-    # "Apple___Apple_scab",
-    # "Apple___Black_rot",
-    # ... replace with your real, ordered class list
+    "Apple___Apple_scab",
+    "Apple___Black_rot",
+    "Apple___Cedar_apple_rust",
+    "Apple___healthy",
+    "Blueberry___healthy",
+    "Cherry_(including_sour)___Powdery_mildew",
+    "Cherry_(including_sour)___healthy",
+    "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot",
+    "Corn_(maize)___Common_rust_",
+    "Corn_(maize)___Northern_Leaf_Blight",
+    "Corn_(maize)___healthy",
+    "Grape___Black_rot",
+    "Grape___Esca_(Black_Measles)",
+    "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)",
+    "Grape___healthy",
+    "Orange___Haunglongbing_(Citrus_greening)",
+    "Peach___Bacterial_spot",
+    "Peach___healthy",
+    "Pepper,_bell___Bacterial_spot",
+    "Pepper,_bell___healthy",
+    "Potato___Early_blight",
+    "Potato___Late_blight",
+    "Potato___healthy",
+    "Raspberry___healthy",
+    "Soybean___healthy",
+    "Squash___Powdery_mildew",
+    "Strawberry___Leaf_scorch",
+    "Strawberry___healthy",
+    "Tomato___Bacterial_spot",
+    "Tomato___Early_blight",
+    "Tomato___Late_blight",
+    "Tomato___Leaf_Mold",
+    "Tomato___Septoria_leaf_spot",
+    "Tomato___Spider_mites Two-spotted_spider_mite",
+    "Tomato___Target_Spot",
+    "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+    "Tomato___Tomato_mosaic_virus",
+    "Tomato___healthy",
 ]
 
 # Standard ImageNet preprocessing — matches "224x224 with ImageNet
