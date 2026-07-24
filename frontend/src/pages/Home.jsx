@@ -6,7 +6,7 @@ const steps = [
   {
     icon: Upload,
     title: "Upload a photo",
-    body: "Snap the affected leaf in natural light — no special equipment needed.",
+    body: "Take a clear photo of the affected leaf in natural daylight for the best results.",
   },
   {
     icon: ScanLine,
@@ -40,9 +40,7 @@ export default function Home() {
               <span className="text-forest">before it spreads.</span>
             </h1>
             <p className="mt-6 max-w-md text-lg text-charcoal/70">
-              Upload a photo of a leaf and get an instant disease diagnosis,
-              confidence score, and treatment plan — powered by a model
-              trained on thousands of plant images.
+         Upload a clear image of a plant leaf to receive an instant disease diagnosis, confidence score, and personalized treatment recommendations powered by advanced AI.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
@@ -83,7 +81,7 @@ export default function Home() {
           <div className="mt-10 grid gap-8 md:grid-cols-3">
             <FeatureCard
               title="Top-3 predictions"
-              body="Not just one answer — see the model's next most likely diagnoses and how confident it is in each."
+              body="Explore the top predicted diseases with confidence scores, helping you compare the most likely diagnoses."
             />
             <FeatureCard
               title="Treatment guidance"

@@ -42,7 +42,7 @@ export default function Dashboard() {
     <div className="mx-auto max-w-3xl px-6 py-16">
       <h1 className="font-display text-3xl text-charcoal">Diagnose a leaf</h1>
       <p className="mt-2 text-charcoal/60">
-        Upload a clear photo of the affected leaf — natural light, filling most of the frame, works best.
+        Upload a clear photo of the affected leaf in natural light, with the leaf filling most of the image.
       </p>
 
       <div className="mt-8 rounded-2xl border-2 border-dashed border-forest/30 bg-surface p-10 text-center">
