@@ -1,9 +1,3 @@
-"""
-Low-level security primitives: password hashing (bcrypt) and JWT
-encode/decode. No FastAPI-specific code here (no Depends, no routes) —
-keeps this module easy to unit test in isolation.
-"""
-
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -14,8 +8,6 @@ from app.utils.config import get_settings
 
 settings = get_settings()
 
-# bcrypt is the requested hashing scheme. passlib handles salting
-# automatically, so we don't manage salts ourselves.
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -28,11 +20,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(subject: str, expires_delta: timedelta | None = None) -> str:
-    """
-    `subject` is the value that identifies the user inside the token —
-    we use the user's id (as a string) so we never need to trust a
-    user-supplied email at request time.
-    """
+  
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
     )
@@ -41,7 +29,6 @@ def create_access_token(subject: str, expires_delta: timedelta | None = None) ->
 
 
 def decode_access_token(token: str) -> str | None:
-    """Returns the user id (sub claim) if the token is valid, else None."""
     try:
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         return payload.get("sub")

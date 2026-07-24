@@ -1,8 +1,3 @@
-"""
-HTTP layer for auth. Stays thin: parse request -> call service -> map
-result/errors to HTTP status codes. No business logic here.
-"""
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 

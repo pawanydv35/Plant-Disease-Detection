@@ -1,15 +1,7 @@
-"""
-Thin wrapper around model/predict.py so main.py's lifespan hook can
-load the model ONCE and store it on app.state, instead of every
-request re-reading model.pth from disk (which would be slow and
-would defeat the purpose of a "load once at startup" design).
-"""
-
 import sys
 from pathlib import Path
 
 # model/ lives outside the app/ package, so we add backend/ to the
-# import path and import predict.py directly by file path.
 _BACKEND_ROOT = Path(__file__).resolve().parents[2]
 if str(_BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(_BACKEND_ROOT))

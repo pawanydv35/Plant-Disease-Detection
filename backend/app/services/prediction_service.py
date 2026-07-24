@@ -1,8 +1,3 @@
-"""
-Prediction business logic — kept separate from routes/predict_routes.py
-and routes/history_routes.py, same pattern as auth_service.py.
-"""
-
 import json
 import sys
 import uuid
@@ -64,9 +59,6 @@ def run_prediction(
     filename = _save_upload(file, raw_bytes)
 
     # --- Leaf gate: reject non-leaf images before wasting a disease
-    # classification on them. If the gate failed to load (e.g. no
-    # internet on first startup), we skip this check rather than
-    # blocking every prediction.
     if leaf_gate_service is not None:
         is_leaf, leaf_score = leaf_gate_service.is_leaf(image)
         if not is_leaf:

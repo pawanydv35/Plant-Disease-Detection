@@ -1,10 +1,3 @@
-"""
-Auth business logic — kept out of routes/auth_routes.py so the HTTP
-layer (status codes, request/response shapes) stays separate from
-the actual signup/login logic. Makes this testable without spinning
-up FastAPI at all.
-"""
-
 from sqlalchemy.orm import Session
 
 from app.auth.security import hash_password, verify_password, create_access_token

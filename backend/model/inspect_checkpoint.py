@@ -1,21 +1,3 @@
-"""
-Run this LOCALLY (where you have your model.pth and PyTorch installed)
-to figure out what's actually saved inside the checkpoint:
-
-    python inspect_checkpoint.py path/to/model.pth
-
-It will tell you:
-  1. Whether the file is a raw state_dict, or a dict with extra keys
-     (some training scripts save {"model_state_dict": ..., "classes": [...]}).
-  2. The shape of the final classifier layer, which tells us the
-     number of output classes even if the class NAMES aren't saved.
-
-If you trained with `torchvision.datasets.ImageFolder`, the class
-names are usually available in your training script as
-`train_dataset.classes` (alphabetically sorted folder names) — check
-there if this script doesn't find them in the checkpoint itself.
-"""
-
 import sys
 import torch
 

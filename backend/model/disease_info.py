@@ -1,18 +1,3 @@
-"""
-Disease knowledge base.
-
-Keys MUST match the exact strings in predict.py's CLASS_NAMES list —
-this is how a prediction result gets matched to its causes/symptoms/
-treatment/prevention text.
-
-Filled in for the standard 38-class PlantVillage / "New Plant Diseases
-Dataset" class list used in predict.py. If you retrain on a different
-or expanded dataset, update CLASS_NAMES in predict.py first, then add
-matching entries here — any class not found below falls back to the
-generic "not available" message (handled in prediction_service.py), so
-the app won't crash, it'll just show incomplete info for undocumented
-classes.
-"""
 
 NOT_A_LEAF_LABEL = "Unrecognized — doesn't look like a clear leaf photo"
 

@@ -1,12 +1,3 @@
-"""
-Pydantic schemas (request/response shapes) — kept separate from the
-SQLAlchemy ORM models in app/models/*.py.
-
-Why separate: ORM models describe DB tables (can have sensitive fields
-like hashed_password). Schemas describe what the API accepts/returns,
-so we never accidentally leak a password hash in a JSON response.
-"""
-
 import uuid
 from datetime import datetime
 

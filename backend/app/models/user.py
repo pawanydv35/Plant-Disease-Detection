@@ -1,10 +1,3 @@
-"""
-User table.
-
-Password is stored ONLY as a bcrypt hash (`hashed_password`) — the
-plaintext password is never persisted anywhere, including logs.
-"""
-
 import uuid
 from datetime import datetime
 

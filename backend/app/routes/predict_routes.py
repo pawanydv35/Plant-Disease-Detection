@@ -1,8 +1,3 @@
-"""
-HTTP layer for prediction. Stays thin: validate auth -> call service ->
-map result/errors to HTTP status codes.
-"""
-
 import json
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status

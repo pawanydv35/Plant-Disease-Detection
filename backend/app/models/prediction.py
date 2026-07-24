@@ -1,11 +1,3 @@
-"""
-Prediction table — one row per prediction a user makes.
-
-Fields are scoped for what the frontend's History page and Prediction
-Result page need. Fully wired up (writes on /predict, reads on
-/history) in the model-integration step.
-"""
-
 import uuid
 from datetime import datetime
 

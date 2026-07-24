@@ -1,17 +1,3 @@
-"""
-Plant Disease Detection API — application entrypoint.
-
-Responsibilities of this file ONLY:
-  - Create the FastAPI app instance
-  - Configure middleware (CORS, etc.)
-  - Load the PyTorch model ONCE at startup (via services.model_service)
-  - Register routers from app/routes/
-  - Expose a health check endpoint
-
-Everything else (business logic, DB access, inference) lives in
-services/, models/, auth/, database/ — main.py should stay thin.
-"""
-
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -34,25 +20,12 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Startup/shutdown hook.
-
-    Why lifespan instead of @app.on_event("startup"):
-    on_event is deprecated in modern FastAPI; lifespan is the
-    recommended way to run startup/shutdown code exactly once.
-
-    This is where the PyTorch model gets loaded into memory ONE time,
-    then stored on app.state so every request reuses it instead of
-    re-loading the .pth file per request (which would be very slow).
-    """
     # --- Startup ---
     init_db()
     try:
         app.state.model_service = ModelService(model_path=settings.MODEL_PATH)
         print(f"Model loaded successfully ({app.state.model_service.num_classes} classes).")
     except FileNotFoundError as e:
-        # Let the app boot anyway so /health, /signup, /login still work
-        # while you're setting up the model file — /predict will 503 until fixed.
         print(f"WARNING: {e}")
         app.state.model_service = None
 
@@ -60,15 +33,11 @@ async def lifespan(app: FastAPI):
         app.state.leaf_gate_service = LeafGateService()
         print("Leaf gate (CLIP) loaded successfully.")
     except Exception as e:
-        # If CLIP can't load (e.g. no internet on first run to download
-        # it), let the app boot anyway — /predict will just skip the
-        # leaf-check step and go straight to disease classification.
         print(f"WARNING: Leaf gate failed to load: {e}")
         app.state.leaf_gate_service = None
 
     yield
     # --- Shutdown ---
-    # (cleanup goes here if ever needed, e.g. closing DB pools)
 
 
 app = FastAPI(
@@ -99,5 +68,5 @@ app.include_router(profile_routes.router, prefix="/profile", tags=["profile"])
 app.include_router(predict_routes.router, prefix="", tags=["prediction"])
 app.include_router(history_routes.router, prefix="/history", tags=["history"])
 
-# Serves uploaded leaf images back to the frontend at /uploads/<filename>
+
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
