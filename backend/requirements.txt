@@ -7,8 +7,8 @@ pydantic==2.9.2
 pydantic-settings==2.5.2
 
 # --- ML ---
-torch==2.4.1
-torchvision==0.19.1
+torch
+torchvision
 pillow==10.4.0
 numpy==1.26.4
 transformers==4.44.2      # CLIP model for the "is this a leaf?" gate
